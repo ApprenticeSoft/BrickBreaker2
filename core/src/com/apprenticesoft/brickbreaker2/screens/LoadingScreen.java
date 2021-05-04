@@ -1,6 +1,7 @@
 package com.apprenticesoft.brickbreaker2.screens;
 
 import com.apprenticesoft.brickbreaker2.BrickBreaker2;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,11 +18,12 @@ public class LoadingScreen implements Screen {
     private Texture textureLogo;
     private Image imageLogo;
     private Stage stage;
+    private float timer = 2f;
 
     public LoadingScreen(final BrickBreaker2 game){
         this.game = game;
 
-        System.out.println("TEST");
+        System.out.println("Loading screen");
     }
 
     @Override
@@ -32,6 +34,12 @@ public class LoadingScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 1, 1);
+
+        timer -= Gdx.graphics.getDeltaTime();
+        System.out.println("Timer: " + timer);
+
+        if(timer < 0)
+            game.setScreen(new GameScreen(game));
     }
 
     @Override
