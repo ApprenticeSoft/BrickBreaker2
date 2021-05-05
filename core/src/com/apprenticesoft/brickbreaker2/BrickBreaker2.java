@@ -5,16 +5,20 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.apprenticesoft.brickbreaker2.screens.LoadingScreen;
+import com.apprenticesoft.brickbreaker2.utils.ObjectPools;
 
 public class BrickBreaker2 extends Game {
 	public SpriteBatch batch;
 	Texture img;
+
+	public ObjectPools pools;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
-		System.out.println("TEEEEEEEEEEEEEEEEEEEEEEEST");
+
+		pools = new ObjectPools(this);
 
 		this.setScreen(new LoadingScreen(this));
 	}

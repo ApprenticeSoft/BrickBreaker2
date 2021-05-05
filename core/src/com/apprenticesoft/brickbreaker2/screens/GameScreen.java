@@ -31,8 +31,8 @@ import com.badlogic.gdx.utils.Array;
 public class GameScreen extends InputAdapter implements Screen {
 
     final BrickBreaker2 game;
-    OrthographicCamera camera;
-    World world;
+    protected OrthographicCamera camera;
+    protected World world;
     static int initY, son, spawnObjet;
     private PolygonShape boxBordure;
     private BodyDef bordureBodyDef;
@@ -111,18 +111,26 @@ public class GameScreen extends InputAdapter implements Screen {
         ScreenUtils.clear(testR, testG, 1, 1);
         debug.render(world, camera.combined);
 
+        // Debug box2d
         world.step(GameConstants.BOX_STEP, GameConstants.BOX_VELOCITY_ITERATIONS, GameConstants.BOX_POSITION_ITERATIONS);
+        //System.out.println("Nombre de body: " + world.getBodyCount());
+        //System.out.println("balls.size: " + balls.size);
 
-        if (Gdx.input.isTouched()) {
+        if (Gdx.input.justTouched()) {
             testR = (float)Gdx.input.getX()/Gdx.graphics.getWidth();
             testG = (float)Gdx.input.getY()/Gdx.graphics.getHeight();
 
-            System.out.println("Touché - X: "  + Gdx.input.getX() + " || Y: " + Gdx.input.getY());
-            System.out.println("Touché - testR: "  + testR + " || testG: " + testG);
-
             spawnBall(  Gdx.input.getX()* GameConstants.WORLD_TO_BOX,
                         camera.viewportHeight - Gdx.input.getY()* GameConstants.WORLD_TO_BOX,
-                        new Vector2(MathUtils.random(-1f,1f),MathUtils.random(-1f,1f)));
+                        new Vector2(MathUtils.random(-1f,1f),1));
+        }
+
+        for (int i = balls.size-1; i>-1; i--){
+            balls.get(i).Active();
+            if (balls.get(i).destroy){
+                game.pools.free(balls.get(i));
+                balls.removeIndex(i);
+            }
         }
     }
 
@@ -152,8 +160,16 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     public void spawnBall(float x, float y, Vector2 speed){
-        Ball ball = new Ball(world, camera, x, y);
-        ball.balleActive = true;
+        //Ball ball = new Ball(world, camera, x, y);
+
+        Ball ball = (Ball)game.pools.obtain(Ball.class);
+
+        System.out.println(world.getClass());
+        System.out.println(camera.getClass());
+        System.out.println(ball.getClass());
+
+        ball.init(world, camera, x, y);
+        ball.ballActive = true;
         ball.startImpulse = true;
         balls.add(ball);
         ball.body.applyLinearImpulse(speed, new Vector2(ball.body.getPosition().x, ball.body.getPosition().y), true);
