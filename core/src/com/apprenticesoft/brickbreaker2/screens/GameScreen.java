@@ -3,6 +3,7 @@ package com.apprenticesoft.brickbreaker2.screens;
 import com.apprenticesoft.brickbreaker2.BrickBreaker2;
 import com.apprenticesoft.brickbreaker2.utils.GameConstants;
 import com.apprenticesoft.brickbreaker2.bodies.Ball;
+import com.apprenticesoft.brickbreaker2.bodies.Bar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.InputAdapter;
@@ -42,12 +43,12 @@ public class GameScreen extends InputAdapter implements Screen {
     boolean spawn;
     Stage stage;
 
+    private Bar bar;
+
     //Box2D debug
     Box2DDebugRenderer debug;
 
     private Array<Ball> balls;
-
-    float testR = 1, testG = 1;
 
     public GameScreen (final BrickBreaker2 game){
         this.game = game;
@@ -98,6 +99,10 @@ public class GameScreen extends InputAdapter implements Screen {
 
         debug = new Box2DDebugRenderer();
 
+
+        //Pad
+        bar = new Bar(world, camera);
+
         balls = new Array<Ball>();
     }
 
@@ -108,7 +113,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(testR, testG, 1, 1);
+        ScreenUtils.clear(0.2f, 0.3f, 0.7f, 1);
         debug.render(world, camera.combined);
 
         // Debug box2d
@@ -117,14 +122,14 @@ public class GameScreen extends InputAdapter implements Screen {
         //System.out.println("balls.size: " + balls.size);
 
         if (Gdx.input.justTouched()) {
-            testR = (float)Gdx.input.getX()/Gdx.graphics.getWidth();
-            testG = (float)Gdx.input.getY()/Gdx.graphics.getHeight();
-
             spawnBall(  Gdx.input.getX()* GameConstants.WORLD_TO_BOX,
                         camera.viewportHeight - Gdx.input.getY()* GameConstants.WORLD_TO_BOX,
-                        new Vector2(MathUtils.random(-1f,1f),1));
+                        new Vector2(MathUtils.random(-0.5f,0.5f),5f));
         }
 
+        bar.deplacement();
+
+        // Activité des balles
         for (int i = balls.size-1; i>-1; i--){
             balls.get(i).Active();
             if (balls.get(i).destroy){
