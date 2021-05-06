@@ -18,7 +18,7 @@ public class LoadingScreen implements Screen {
     private Texture textureLogo;
     private Image imageLogo;
     private Stage stage;
-    private float timer = 2f;
+    private float timer = 1f;
 
     public LoadingScreen(final BrickBreaker2 game){
         this.game = game;

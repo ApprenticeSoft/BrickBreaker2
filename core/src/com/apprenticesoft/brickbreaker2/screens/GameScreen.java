@@ -44,6 +44,7 @@ public class GameScreen extends InputAdapter implements Screen {
     Stage stage;
 
     private Bar bar;
+    private Ball ball;
 
     //Box2D debug
     Box2DDebugRenderer debug;
@@ -102,8 +103,13 @@ public class GameScreen extends InputAdapter implements Screen {
 
         //Pad
         bar = new Bar(world, camera);
+        Ball ball = (Ball)game.pools.obtain(Ball.class);
+        ball.init(world, camera,
+                bar.getPosition(),
+                bar.body.getPosition().y + bar.getHeight());
 
         balls = new Array<Ball>();
+        balls.add(ball);
     }
 
     @Override
@@ -121,11 +127,13 @@ public class GameScreen extends InputAdapter implements Screen {
         //System.out.println("Nombre de body: " + world.getBodyCount());
         //System.out.println("balls.size: " + balls.size);
 
+        /*
         if (Gdx.input.justTouched()) {
             spawnBall(  Gdx.input.getX()* GameConstants.WORLD_TO_BOX,
                         camera.viewportHeight - Gdx.input.getY()* GameConstants.WORLD_TO_BOX,
                         new Vector2(MathUtils.random(-0.5f,0.5f),5f));
         }
+         */
 
         bar.deplacement();
 
