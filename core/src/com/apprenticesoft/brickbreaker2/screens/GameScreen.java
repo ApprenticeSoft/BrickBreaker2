@@ -1,6 +1,8 @@
 package com.apprenticesoft.brickbreaker2.screens;
 
 import com.apprenticesoft.brickbreaker2.BrickBreaker2;
+import com.apprenticesoft.brickbreaker2.bodies.Brick;
+import com.apprenticesoft.brickbreaker2.utils.BrickEnum;
 import com.apprenticesoft.brickbreaker2.utils.GameConstants;
 import com.apprenticesoft.brickbreaker2.bodies.Ball;
 import com.apprenticesoft.brickbreaker2.bodies.Bar;
@@ -50,6 +52,7 @@ public class GameScreen extends InputAdapter implements Screen {
     Box2DDebugRenderer debug;
 
     private Array<Ball> balls;
+    private Array<Brick> bricks;
 
     public GameScreen (final BrickBreaker2 game){
         this.game = game;
@@ -110,6 +113,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
         balls = new Array<Ball>();
         balls.add(ball);
+
+        bricks = new Array<Brick>();
+        Brick brick1 = new Brick(world, camera, camera.viewportWidth/2, camera.viewportWidth/2, BrickEnum.rectangleH);
+        brick1.setPosition(camera.viewportWidth/2, camera.viewportWidth/2);
+        bricks.add(brick1);
     }
 
     @Override

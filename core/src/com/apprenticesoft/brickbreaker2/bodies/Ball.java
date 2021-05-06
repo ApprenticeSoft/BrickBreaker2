@@ -63,14 +63,14 @@ public class Ball extends CircleShape {
         vectorSpeed = body.getLinearVelocity();
         body.setLinearVelocity(vectorSpeed.clamp(maxSpeed, maxSpeed));
 
-        //D�placement de la balle
+        //Déplacement de la balle
         if(startImpulse && !ballActive && !Gdx.input.isTouched()){
             ballActive = true;
             initY = MathUtils.random(-3,3);
             body.applyLinearImpulse(initY, 10, body.getPosition().x, body.getPosition().y, true);
         }
 
-        //La balle ne sort pas de l'�cran
+        //La balle ne sort pas de l'écran
         if(body.getPosition().x - rayon < 0)
             body.setTransform(rayon, body.getPosition().y, 0);
         if(body.getPosition().x + rayon > camera.viewportWidth)
