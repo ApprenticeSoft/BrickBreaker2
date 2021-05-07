@@ -122,6 +122,8 @@ public class Brick extends PolygonShape{
             GameConstants.bricksDetruites++;
             visible = false;
         }
+
+        System.out.println("Collision!! Dureté: " + durete);
     }
 
     public void Destruction(){
@@ -129,6 +131,8 @@ public class Brick extends PolygonShape{
         opacite = 0;
         GameConstants.bricksDetruites++;
         visible = false;
+
+        System.out.println("Destruction!!");
     }
 
     public void Edition(){
@@ -187,12 +191,13 @@ public class Brick extends PolygonShape{
     }
      */
 
-    public static void detruire(Array<Brick> array){
+    public static void Destroy(Array<Brick> array){
         for(int i = 0; i < array.size; i++){
             if(!array.get(i).visible){
                 array.get(i).body.setActive(false);
                 world.destroyBody(array.get(i).body);
                 array.removeIndex(i);
+                System.out.println("Brique détruite!!");
             }
         }
     }

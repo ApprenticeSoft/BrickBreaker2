@@ -153,6 +153,7 @@ public class GameScreen extends InputAdapter implements Screen {
              */
         }
         Ball.Destroy(balls);
+        Brick.Destroy(bricks);
     }
 
     @Override
