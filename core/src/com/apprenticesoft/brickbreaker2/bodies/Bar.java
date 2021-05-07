@@ -47,13 +47,13 @@ public class Bar extends PolygonShape{
 
         bodyDef.position.set(new Vector2(centre - ecart, 1.2f*camera.viewportHeight/9));
         body = world.createBody(bodyDef);
-        body.setUserData("Barre");
+        body.setUserData("Bar");
         body.createFixture(fixtureDef);
         body.setFixedRotation(true);
 
         bodyDef.position.set(new Vector2(centre + ecart, 1.2f*camera.viewportHeight/9));
         body2 = world.createBody(bodyDef);
-        body2.setUserData("Barre");
+        body2.setUserData("Bar");
         body2.createFixture(fixtureDef);
         body2.setFixedRotation(true);
     }

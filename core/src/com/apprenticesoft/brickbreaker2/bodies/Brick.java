@@ -109,6 +109,8 @@ public class Brick extends PolygonShape{
             body = world.createBody(bodyDef);
             body.createFixture(this, 0.0f);
         }
+
+        body.setUserData("Brick");
     }
 
     public void Collision(){
@@ -117,7 +119,7 @@ public class Brick extends PolygonShape{
         else {
             durete--;
             opacite = 0;
-            GameConstants.briquesDetruites++;
+            GameConstants.bricksDetruites++;
             visible = false;
         }
     }
@@ -125,7 +127,7 @@ public class Brick extends PolygonShape{
     public void Destruction(){
         durete = 0;
         opacite = 0;
-        GameConstants.briquesDetruites++;
+        GameConstants.bricksDetruites++;
         visible = false;
     }
 

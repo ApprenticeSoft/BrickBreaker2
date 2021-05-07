@@ -26,9 +26,9 @@ public class GameConstants {
     public static float vitesseJeuMax = 1.0f;
     //Gestion des objets
     public static int objet = 9;
-    public static int briquesInitiales = 0;
-    public static int briquesDetruites = 0;
-    public static int briquesDetruitesAuLaser = 0;
+    public static int bricksInitiales = 0;
+    public static int bricksDetruites = 0;
+    public static int bricksDetruitesAuLaser = 0;
     public static int dernierObjet = 0;
     public static int avantDernierObjet = 0;
     //Objet modification barre

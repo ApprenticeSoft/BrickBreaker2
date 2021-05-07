@@ -3,6 +3,7 @@ package com.apprenticesoft.brickbreaker2.bodies;
 import com.apprenticesoft.brickbreaker2.BrickBreaker2;
 import com.apprenticesoft.brickbreaker2.utils.GameConstants;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.*;
@@ -17,7 +18,7 @@ public class Ball extends CircleShape {
     public float posX, posY, rayon;
     public static World world;
     Camera camera;
-    public boolean ballActive, startImpulse, ballLaserContact, destroy;
+    public boolean ballActive, startImpulse, ballLaserContact;
     private Vector2 vectorSpeed;
     public float maxSpeed;
     public int initY, rebond;
@@ -35,7 +36,6 @@ public class Ball extends CircleShape {
         rebond = 0;
         ballActive = false;
         startImpulse = false;
-        destroy = false;
         rayon = camera.viewportWidth/50;
 
         maxSpeed = GameConstants.vitesseBalle * camera.viewportHeight;
@@ -52,7 +52,7 @@ public class Ball extends CircleShape {
         fixtureDef.friction = 0.0f;
         fixtureDef.restitution = 1;
         body.createFixture(fixtureDef);
-        body.setUserData("Balle");
+        body.setUserData("Ball");
 
         System.out.println("Balle initiée");
     }
@@ -94,14 +94,28 @@ public class Ball extends CircleShape {
 
         //La balle laser ne dure que 3,6 secondes
         if (ballLaserContact && TimeUtils.millis() - balleLaserTime > 3600)
-            this.body.setUserData("Balle");
+            this.body.setUserData("Ball");
 
         // Destruction de la balle
+        /*
         if(body.getPosition().y < -2*getRadius()){
             body.setActive(false);
             world.destroyBody(body);
             destroy = true;
             System.out.println("Destroy");
+        }
+         */
+    }
+
+    public static void Destroy(Array<Ball> array){
+        for(int i = array.size-1; i>-1; i--){
+            if(array.get(i).body.getPosition().y < -2*array.get(i).getRadius()){
+                array.get(i).body.setActive(false);
+                world.destroyBody(array.get(i).body);
+                array.removeIndex(i);
+
+                System.out.println("Destroy");
+            }
         }
     }
 }

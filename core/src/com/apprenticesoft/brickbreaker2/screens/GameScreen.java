@@ -29,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 
 public class GameScreen extends InputAdapter implements Screen {
@@ -43,6 +44,7 @@ public class GameScreen extends InputAdapter implements Screen {
     private Skin skin;
     private TextureAtlas textureAtlas;
     boolean spawn;
+    float spawnX, spawnY;
     Stage stage;
 
     private Bar bar;
@@ -121,11 +123,6 @@ public class GameScreen extends InputAdapter implements Screen {
     }
 
     @Override
-    public void show() {
-
-    }
-
-    @Override
     public void render(float delta) {
         ScreenUtils.clear(0.2f, 0.3f, 0.7f, 1);
         debug.render(world, camera.combined);
@@ -148,11 +145,202 @@ public class GameScreen extends InputAdapter implements Screen {
         // Activité des balles
         for (int i = balls.size-1; i>-1; i--){
             balls.get(i).Active();
+            /*
             if (balls.get(i).destroy){
                 game.pools.free(balls.get(i));
                 balls.removeIndex(i);
             }
+             */
         }
+        Ball.Destroy(balls);
+    }
+
+    @Override
+    public void show() {
+        //Important pour pouvoir utiliser la touche BACK
+        Gdx.input.setCatchBackKey(true);
+        //Permet d'interagir avec les Actors du Stage
+        Gdx.input.setInputProcessor(stage);
+
+        world.setContactListener(new ContactListener(){
+            @Override
+            public void beginContact(Contact contact) {
+                Body a = contact.getFixtureA().getBody();
+                Body b = contact.getFixtureB().getBody();
+                if(a.getUserData() != null && b.getUserData() != null){
+                    if(a.getUserData().equals("Brick") && b.getUserData().equals("Ball")){
+                        //couleurEdit = MathUtils.random(couleurMin,couleurMax);
+                        System.out.println("Contact avec une brique!!!");
+                        for(Ball ball : balls){
+                            if(ball.body == b)
+                                ball.rebond = 0;
+                        }
+
+                        for(Brick brick : bricks){
+                            if(brick.body == a){
+                                brick.Collision();
+                                /*
+                                if(Donnees.getSon()){
+                                    son = MathUtils.random(0,15);
+                                    sons.getSons().get(son).play();
+                                }
+                                 */
+
+                                //Apparition des objets
+                                spawnObjet = MathUtils.random(1,100);
+                                if(spawnObjet > 38 && spawnObjet < 65 && brick.opacite == 0 && GameConstants.bricksDetruites > 2){
+                                    GameConstants.bricksDetruites = 0;
+                                    spawn = true;
+                                    spawnX = a.getPosition().x;
+                                    spawnY = a.getPosition().y;
+                                }
+                            }
+                        }
+                    }
+                    else if(a.getUserData().equals("Bar") && (b.getUserData().equals("Ball") || b.getUserData().equals("BallLaser"))){
+                        if(b.getPosition().x > (bar.getPosition() - bar.getLargeur()) && b.getPosition().x < (bar.getPosition() + bar.getLargeur())){
+                            System.out.println("Contact avec la barre!!!!");
+                            for(Ball ball : balls){
+                                if(ball.body == b)
+                                    ball.rebond = 0;
+                            }
+
+                            b.setLinearVelocity(b.getLinearVelocity().rotate((30*(b.getPosition().x - bar.getPosition())/(bar.getLargeur()))));
+                        }
+                    }
+                    else if(a.getUserData().equals("Rebord") && (b.getUserData().equals("Ball") || b.getUserData().equals("BallLaser"))){
+                        System.out.println("Contact avec un rebord");
+                        for(Ball ball : balls){
+                            if(ball.body == b){
+                                ball.rebond++;
+                                if(ball.rebond > 3 && b.getLinearVelocity().y >= 0 ){
+                                    b.applyLinearImpulse(0, 0.1f, b.getPosition().x, b.getPosition().y, true);
+                                }
+                                else if(ball.rebond > 3){
+                                    b.applyLinearImpulse(0, -0.1f, b.getPosition().x, b.getPosition().y, true);
+                                }
+                            }
+                        }
+                    }
+                    else if((a.getUserData().equals("Bouclier") && b.getUserData().equals("Ball")) ||
+                            (a.getUserData().equals("Ball") && b.getUserData().equals("Bouclier"))){
+                        GameConstants.bouclierActif = false;
+                    }
+                }
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+                //Ignore les collisions entre la ball et les objets
+                Body a = contact.getFixtureA().getBody();
+                Body b = contact.getFixtureB().getBody();
+                if(a.getUserData() != null && b.getUserData() != null){
+                    if(a.getUserData().equals("Brick") && b.getUserData().equals("BallLaser")){
+                        //couleurEdit = MathUtils.random(couleurMin,couleurMax);			//Choix de la couleur pour le mode Epileptique
+                        GameConstants.bricksDetruitesAuLaser++;
+                        System.out.println(" Variables.bricksDetruitesAuLaser = " +  GameConstants.bricksDetruitesAuLaser);
+                        contact.setEnabled(false);
+
+                        for(Ball ball : balls){
+                            if(ball.body == b){
+                                ball.rebond = 0;
+
+                                if(!ball.ballLaserContact){
+                                    ball.ballLaserContact = true;
+                                    //ball.ballLaserTime = TimeUtils.millis();
+                                }
+                            }
+                        }
+
+                        for(Brick brick : bricks){
+                            if(brick.body == a){
+                                brick.Destruction();
+                                /*
+                                if(Donnees.getSon()){
+                                    son = MathUtils.random(0,15);
+                                    sons.getSons().get(son).play();
+                                }
+                                 */
+
+                                //Apparition des objets
+                                spawnObjet = MathUtils.random(1,100);
+                                if(spawnObjet > 42 && spawnObjet < 60 && GameConstants.bricksDetruites > 2){
+                                    GameConstants.bricksDetruites = 0;
+                                    spawn = true;
+                                    spawnX = a.getPosition().x;
+                                    spawnY = a.getPosition().y;
+                                }
+                            }
+                        }
+                    }
+                    else if((a.getUserData().equals("Objet") && b.getUserData() != "Bar") ||
+                            (b.getUserData().equals("Objet") && a.getUserData() != "Bar")){
+                        contact.setEnabled(false);
+                    }
+                    else if((a.getUserData().equals("Laser") && b.getUserData() != "Brick") ||
+                            (b.getUserData().equals("Laser") && a.getUserData() != "Brick")){
+                        contact.setEnabled(false);
+                    }
+                    else if((a.getUserData().equals("Ball") || a.getUserData().equals("BallLaser")) &&
+                            (b.getUserData().equals("Ball") || b.getUserData().equals("BallLaser"))){
+                        contact.setEnabled(false);
+                    }
+                }
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+                /*
+                //Permet d'activer la destruction de l'objet touché par la bar, dans le renderer, sans faire planter l'osti de programme
+                Body a = contact.getFixtureA().getBody();
+                Body b = contact.getFixtureB().getBody();
+                if(a.getUserData() != null && b.getUserData() != null){
+                    if(a.getUserData().equals("Objet") && b.getUserData().equals("Bar") || a.getUserData().equals("Bar") && b.getUserData().equals("Objet")){
+                        for(int i = 0; i < objets.size; i++){
+                            if(objets.get(i).body == a || objets.get(i).body == b){
+                                objets.get(i).body.setAwake(false);
+                            }
+                        }
+                    }
+                    //Destruction du laser et des bricks par le laser
+                    else if(a.getUserData().equals("Laser") && b.getUserData().equals("Brick") || a.getUserData().equals("Brick") && b.getUserData().equals("Laser")){
+                        couleurEdit = MathUtils.random(couleurMin,couleurMax);
+
+                        for(int i = 0; i < lasers.size; i++){
+                            if(lasers.get(i).body == a || lasers.get(i).body == b){
+                                lasers.get(i).visible = false;
+                            }
+                        }
+                        for(Brick brick : bricks){
+                            if(brick.body == a || brick.body == b){
+                                brick.Collision();
+                                if(Donnees.getSon()){
+                                    son = MathUtils.random(0,15);
+                                    sons.getSons().get(son).play();
+                                }
+
+                                //Apparition des objets
+                                spawnObjet = MathUtils.random(1,100);
+                                if(spawnObjet > 45 && spawnObjet < 70 && brick.opacite == 0 && GameConstants.bricksDetruites > 2){
+                                    GameConstants.bricksDetruites = 0;
+                                    spawn = true;
+                                    spawnX = brick.body.getPosition().x;
+                                    spawnY = brick.body.getPosition().y;
+                                }
+                            }
+                        }
+                    }
+                }
+                */
+            }
+        });
+
     }
 
     @Override
