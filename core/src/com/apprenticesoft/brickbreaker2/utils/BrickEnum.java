@@ -1,8 +1,7 @@
 package com.apprenticesoft.brickbreaker2.utils;
 
 public enum BrickEnum {
-    rectangleH,
-    rectangleV,
+    rectangle,
     carre,
     triangle,
     rond;

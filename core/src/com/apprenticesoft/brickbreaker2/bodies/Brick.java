@@ -2,6 +2,8 @@ package com.apprenticesoft.brickbreaker2.bodies;
 
 
 import com.apprenticesoft.brickbreaker2.BrickBreaker2;
+import com.apprenticesoft.brickbreaker2.utils.GameConstants;
+import com.apprenticesoft.brickbreaker2.utils.BrickEnum;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,8 +17,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.apprenticesoft.brickbreaker2.utils.GameConstants;
-import com.apprenticesoft.brickbreaker2.utils.BrickEnum;
+
+import static com.badlogic.gdx.math.MathUtils.degRad;
 //import com.minimal.brick.breaker.free.Couleurs;
 
 public class Brick extends PolygonShape{
@@ -34,7 +36,7 @@ public class Brick extends PolygonShape{
 
     public Brick(BrickBreaker2 game) {    }
 
-    public void init(World world, Camera camera, float posX, float posY, BrickEnum brickEnum){
+    public void init(World world, Camera camera, float posX, float posY, float angle, BrickEnum brickEnum){
         this.world = world;
         this.camera = camera;
         this.posX = posX;
@@ -46,17 +48,28 @@ public class Brick extends PolygonShape{
         durete = 1;
 
         switch(brickEnum){
-            case rectangleH :
+            case rectangle :
                 width = camera.viewportWidth/24;
                 height = width/2;
-                break;
-            case rectangleV :
-                height = camera.viewportWidth/24;
-                width = height/2;
+                this.setAsBox(width, height);
                 break;
             case carre :
                 height = camera.viewportWidth/26;
                 width = height;
+                this.setAsBox(width, height);
+                break;
+            case triangle :
+                width = camera.viewportWidth/8;
+                height = (float)Math.sqrt(3*width*width/4);
+
+                Vector2 coordinates [] = new Vector2 [3];
+                //coordinates[0] = new Vector2(0,0);
+                //coordinates[1] = new Vector2(width,0);
+                //coordinates[2] = new Vector2(width/2,height);
+                coordinates[0] = new Vector2(-width/2,-height/3);
+                coordinates[1] = new Vector2(width/2,-height/3);
+                coordinates[2] = new Vector2(0,2*height/3);
+                this.set(coordinates);
                 break;
             default :
                 width = camera.viewportWidth/24;
@@ -65,8 +78,9 @@ public class Brick extends PolygonShape{
         }
 
         bodyDef = new BodyDef();
-        this.setAsBox(width, height);
+        //this.setAsBox(width, height);
         bodyDef.position.set(new Vector2(posX, posY));
+        bodyDef.angle = MathUtils.degreesToRadians * angle;
 
         if(GameConstants.microgravite){
             bodyDef.type = BodyType.DynamicBody;
