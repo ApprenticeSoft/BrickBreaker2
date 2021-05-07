@@ -1,6 +1,7 @@
 package com.apprenticesoft.brickbreaker2.bodies;
 
 
+import com.apprenticesoft.brickbreaker2.BrickBreaker2;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -31,13 +32,18 @@ public class Brick extends PolygonShape{
     Camera camera;
     //Couleurs couleurs = new Couleurs(GameConstants.groupeSelectione);
 
-    public Brick(World world, Camera camera, float posX, float posY, BrickEnum brickEnum){
-        super();
+    public Brick(BrickBreaker2 game) {    }
+
+    public void init(World world, Camera camera, float posX, float posY, BrickEnum brickEnum){
         this.world = world;
         this.camera = camera;
         this.posX = posX;
         this.posY = posY;
         this.brickEnum = brickEnum;
+
+        opacite = 1;
+        visible = true;
+        durete = 1;
 
         switch(brickEnum){
             case rectangleH :
@@ -60,10 +66,24 @@ public class Brick extends PolygonShape{
 
         bodyDef = new BodyDef();
         this.setAsBox(width, height);
+        bodyDef.position.set(new Vector2(posX, posY));
 
-        opacite = 1;
-        visible = true;
-        durete = 1;
+        if(GameConstants.microgravite){
+            bodyDef.type = BodyType.DynamicBody;
+            body = world.createBody(bodyDef);
+            FixtureDef fixtureDef = new FixtureDef();
+            fixtureDef.shape = this;
+            fixtureDef.density = 160.0f;
+            fixtureDef.friction = 100.0f;
+            fixtureDef.restitution = 0.3f;
+            body.createFixture(fixtureDef);
+        }
+        else{
+            body = world.createBody(bodyDef);
+            body.createFixture(this, 0.0f);
+        }
+
+        body.setUserData("Brick");
     }
 
     public float getWidth(){
@@ -93,24 +113,8 @@ public class Brick extends PolygonShape{
     public void setPosition(float X, float Y){
         posX = X;
         posY = Y;
-        bodyDef.position.set(new Vector2(posX, posY));
 
-        if(GameConstants.microgravite){
-            bodyDef.type = BodyType.DynamicBody;
-            body = world.createBody(bodyDef);
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.shape = this;
-            fixtureDef.density = 160.0f;
-            fixtureDef.friction = 100.0f;
-            fixtureDef.restitution = 0.3f;
-            body.createFixture(fixtureDef);
-        }
-        else{
-            body = world.createBody(bodyDef);
-            body.createFixture(this, 0.0f);
-        }
-
-        body.setUserData("Brick");
+        this.body.setTransform(new Vector2(posX, posY), this.body.getAngle());
     }
 
     public void Collision(){
@@ -191,13 +195,17 @@ public class Brick extends PolygonShape{
     }
      */
 
-    public static void Destroy(Array<Brick> array){
+    public static void Destroy(final BrickBreaker2 game, Array<Brick> array){
         for(int i = 0; i < array.size; i++){
-            if(!array.get(i).visible){
-                array.get(i).body.setActive(false);
-                world.destroyBody(array.get(i).body);
+            Brick brick = array.get(i);
+
+            if(!brick.visible){
+                brick.body.setActive(false);
+                world.destroyBody(brick.body);
                 array.removeIndex(i);
                 System.out.println("Brique détruite!!");
+
+                game.pools.free(brick);
             }
         }
     }

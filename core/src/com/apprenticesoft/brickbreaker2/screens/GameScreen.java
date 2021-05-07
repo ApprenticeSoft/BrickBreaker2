@@ -8,6 +8,7 @@ import com.apprenticesoft.brickbreaker2.bodies.Ball;
 import com.apprenticesoft.brickbreaker2.bodies.Bar;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -30,7 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
-
+import com.badlogic.gdx.Input.Keys;
 
 public class GameScreen extends InputAdapter implements Screen {
 
@@ -113,13 +114,19 @@ public class GameScreen extends InputAdapter implements Screen {
                 bar.getPosition(),
                 bar.body.getPosition().y + bar.getHeight());
 
-        balls = new Array<Ball>();
+        balls = new Array<>();
         balls.add(ball);
 
-        bricks = new Array<Brick>();
-        Brick brick1 = new Brick(world, camera, camera.viewportWidth/2, camera.viewportWidth/2, BrickEnum.rectangleH);
-        brick1.setPosition(camera.viewportWidth/2, camera.viewportWidth/2);
+        bricks = new Array<>();
+        Brick brick1 = (Brick)game.pools.obtain(Brick.class);
+        brick1.init(world, camera, camera.viewportWidth/2, camera.viewportWidth/2, BrickEnum.rectangleH);
+        Brick brick2 = (Brick)game.pools.obtain(Brick.class);
+        brick2.init(world, camera, 0, 0, BrickEnum.rectangleH);
+        brick2.setPosition(3*camera.viewportWidth/4, camera.viewportHeight/2);
+
         bricks.add(brick1);
+        bricks.add(brick2);
+
     }
 
     @Override
@@ -145,21 +152,16 @@ public class GameScreen extends InputAdapter implements Screen {
         // Activité des balles
         for (int i = balls.size-1; i>-1; i--){
             balls.get(i).Active();
-            /*
-            if (balls.get(i).destroy){
-                game.pools.free(balls.get(i));
-                balls.removeIndex(i);
-            }
-             */
         }
-        Ball.Destroy(balls);
-        Brick.Destroy(bricks);
+        Ball.Destroy(game, balls);
+        Brick.Destroy(game, bricks);
     }
 
     @Override
     public void show() {
         //Important pour pouvoir utiliser la touche BACK
-        Gdx.input.setCatchBackKey(true);
+        //Gdx.input.setCatchBackKey(true);
+        Gdx.input.setCatchKey(Keys.BACK, true);
         //Permet d'interagir avec les Actors du Stage
         Gdx.input.setInputProcessor(stage);
 
@@ -206,7 +208,7 @@ public class GameScreen extends InputAdapter implements Screen {
                                     ball.rebond = 0;
                             }
 
-                            b.setLinearVelocity(b.getLinearVelocity().rotate((30*(b.getPosition().x - bar.getPosition())/(bar.getLargeur()))));
+                            b.setLinearVelocity(b.getLinearVelocity().rotateDeg((30*(b.getPosition().x - bar.getPosition())/(bar.getLargeur()))));
                         }
                     }
                     else if(a.getUserData().equals("Rebord") && (b.getUserData().equals("Ball") || b.getUserData().equals("BallLaser"))){

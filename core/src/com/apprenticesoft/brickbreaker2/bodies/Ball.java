@@ -107,14 +107,17 @@ public class Ball extends CircleShape {
          */
     }
 
-    public static void Destroy(Array<Ball> array){
+    public static void Destroy(final BrickBreaker2 game, Array<Ball> array){
         for(int i = array.size-1; i>-1; i--){
-            if(array.get(i).body.getPosition().y < -2*array.get(i).getRadius()){
-                array.get(i).body.setActive(false);
-                world.destroyBody(array.get(i).body);
+            Ball ball = array.get(i);
+
+            if(ball.body.getPosition().y < -2*ball.getRadius()){
+                ball.body.setActive(false);
+                world.destroyBody(ball.body);
                 array.removeIndex(i);
 
                 System.out.println("Destroy");
+                game.pools.free(ball);
             }
         }
     }
