@@ -6,6 +6,7 @@ import com.apprenticesoft.brickbreaker2.utils.BrickEnum;
 import com.apprenticesoft.brickbreaker2.utils.GameConstants;
 import com.apprenticesoft.brickbreaker2.bodies.Ball;
 import com.apprenticesoft.brickbreaker2.bodies.Bar;
+import com.apprenticesoft.brickbreaker2.utils.LevelBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Input;
@@ -117,6 +118,7 @@ public class GameScreen extends InputAdapter implements Screen {
         balls = new Array<>();
         balls.add(ball);
 
+        // Briques
         bricks = new Array<>();
         Brick brick1 = (Brick)game.pools.obtain(Brick.class);
         brick1.init(world, camera, camera.viewportWidth/2, camera.viewportWidth/2, 0, BrickEnum.rectangle);
@@ -129,13 +131,17 @@ public class GameScreen extends InputAdapter implements Screen {
         Brick brick4 = (Brick)game.pools.obtain(Brick.class);
         brick4.init(world, camera, brick3.posX, brick3.posY + brick3.height, 0, BrickEnum.triangle);
         Brick brick5 = (Brick)game.pools.obtain(Brick.class);
-        brick5.init(world, camera, brick3.posX, brick3.posY + 2*brick3.height, 90, BrickEnum.triangle);
+        brick5.init(world, camera, brick3.posX + brick3.width/2, brick3.posY + 4*brick3.height/3, 180, BrickEnum.triangle);
 
         bricks.add(brick1);
         bricks.add(brick2);
         bricks.add(brick3);
         bricks.add(brick4);
         bricks.add(brick5);
+
+        LevelBuilder level = new LevelBuilder(game, world, camera, bricks);
+        level.Build(5,5, 8, BrickEnum.triangle);
+
 
     }
 
@@ -165,6 +171,51 @@ public class GameScreen extends InputAdapter implements Screen {
         }
         Ball.Destroy(game, balls);
         Brick.Destroy(game, bricks);
+
+        //Vie perdue - Apparition d'une balle & réinitialisation des powerups
+        if(balls.size == 0){
+            Ball ball = (Ball)game.pools.obtain(Ball.class);
+            ball.init(world, camera,
+                    bar.getPosition(),
+                    bar.body.getPosition().y + bar.getHeight());
+            balls.add(ball);
+            GameConstants.vitesseBalle = GameConstants.vitesseBalleNormale;
+            GameConstants.ecart = GameConstants.barreNormale;
+            GameConstants.laserActif = false;
+            GameConstants.tirs = 0;
+            GameConstants.viesPerdues++;
+            System.out.println("Vies perdues = " +GameConstants.viesPerdues);
+        }
+
+        //Mettre le jeu en pause
+        if (Gdx.input.isKeyJustPressed(Keys.ESCAPE) && /*!tableFin.isVisible()*/ GameConstants.viesPerdues < 3 && bricks.size != 0){
+            if(GameConstants.pause){
+                GameConstants.pause = false;
+
+                if(bricks.size != 0){
+                    GameConstants.BOX_STEP = 1/60f;
+                    /*
+                    imagePause.addAction(Actions.alpha(0, 0.25f));
+                    tablePause.addAction(Actions.moveTo(2 * Gdx.graphics.getWidth(),
+                            tablePause.getY(),
+                            0.25f));
+                     */
+                }
+            }
+            else{
+                GameConstants.pause = true;
+
+                if(bricks.size != 0){
+                    GameConstants.BOX_STEP = 0;
+                    /*
+                    imagePause.addAction(Actions.alpha(0.75f, 0.25f));
+                    tablePause.addAction(Actions.moveTo(Gdx.graphics.getWidth()/2 - tablePause.getWidth()/2,
+                            tablePause.getY(),
+                            0.25f));
+                     */
+                }
+            }
+        }
     }
 
     @Override
@@ -226,11 +277,11 @@ public class GameScreen extends InputAdapter implements Screen {
                         for(Ball ball : balls){
                             if(ball.body == b){
                                 ball.rebond++;
-                                if(ball.rebond > 3 && b.getLinearVelocity().y >= 0 ){
-                                    b.applyLinearImpulse(0, 0.1f, b.getPosition().x, b.getPosition().y, true);
+                                if(ball.rebond > 2 && b.getLinearVelocity().y >= 0 ){
+                                    b.applyLinearImpulse(0, 0.3f, b.getPosition().x, b.getPosition().y, true);
                                 }
                                 else if(ball.rebond > 3){
-                                    b.applyLinearImpulse(0, -0.1f, b.getPosition().x, b.getPosition().y, true);
+                                    b.applyLinearImpulse(0, -0.3f, b.getPosition().x, b.getPosition().y, true);
                                 }
                             }
                         }
