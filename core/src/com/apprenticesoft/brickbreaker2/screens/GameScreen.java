@@ -120,27 +120,11 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Briques
         bricks = new Array<>();
-        Brick brick1 = (Brick)game.pools.obtain(Brick.class);
-        brick1.init(world, camera, camera.viewportWidth/2, camera.viewportWidth/2, 0, BrickEnum.rectangle);
-        Brick brick2 = (Brick)game.pools.obtain(Brick.class);
-        brick2.init(world, camera, 0, 0, 0, BrickEnum.rectangle);
-        brick2.setPosition(3*camera.viewportWidth/4, camera.viewportHeight/2);
 
-        Brick brick3 = (Brick)game.pools.obtain(Brick.class);
-        brick3.init(world, camera, 0.1f*camera.viewportWidth, 0.1f*camera.viewportWidth, 0, BrickEnum.triangle);
-        Brick brick4 = (Brick)game.pools.obtain(Brick.class);
-        brick4.init(world, camera, brick3.posX, brick3.posY + brick3.height, 0, BrickEnum.triangle);
-        Brick brick5 = (Brick)game.pools.obtain(Brick.class);
-        brick5.init(world, camera, brick3.posX + brick3.width/2, brick3.posY + 4*brick3.height/3, 180, BrickEnum.triangle);
-
-        bricks.add(brick1);
-        bricks.add(brick2);
-        bricks.add(brick3);
-        bricks.add(brick4);
-        bricks.add(brick5);
-
-        LevelBuilder level = new LevelBuilder(game, world, camera, bricks);
-        level.Build(5,5, 8, BrickEnum.triangle);
+        LevelBuilder level1 = new LevelBuilder(game, world, camera, bricks);
+        level1.Build(1,5, 8, BrickEnum.rectangle);
+        LevelBuilder level2 = new LevelBuilder(game, world, camera, bricks);
+        level2.Build(1,5, 8, BrickEnum.triangle);
 
 
     }

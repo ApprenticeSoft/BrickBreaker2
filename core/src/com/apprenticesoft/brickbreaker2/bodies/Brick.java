@@ -59,16 +59,13 @@ public class Brick extends PolygonShape{
                 this.setAsBox(width, height);
                 break;
             case triangle :
-                width = camera.viewportWidth/8;
+                width = camera.viewportWidth/24;
                 height = (float)Math.sqrt(3*width*width/4);
 
                 Vector2 coordinates [] = new Vector2 [3];
-                //coordinates[0] = new Vector2(0,0);
-                //coordinates[1] = new Vector2(width,0);
-                //coordinates[2] = new Vector2(width/2,height);
-                coordinates[0] = new Vector2(-width/2,-height/3);
-                coordinates[1] = new Vector2(width/2,-height/3);
-                coordinates[2] = new Vector2(0,2*height/3);
+                coordinates[0] = new Vector2(-width,-2*height/3);
+                coordinates[1] = new Vector2(width,-2*height/3);
+                coordinates[2] = new Vector2(0,2*2*height/3);
                 this.set(coordinates);
                 break;
             default :
