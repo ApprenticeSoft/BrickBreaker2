@@ -18,7 +18,15 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
-import static com.badlogic.gdx.math.MathUtils.degRad;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonSprite;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.utils.ShortArray;
+
 //import com.minimal.brick.breaker.free.Couleurs;
 
 public class Brick extends PolygonShape{
@@ -33,6 +41,7 @@ public class Brick extends PolygonShape{
     BrickEnum brickEnum;
     Camera camera;
     //Couleurs couleurs = new Couleurs(GameConstants.groupeSelectione);
+    private PolygonSprite polySprite;
 
     public Brick(BrickBreaker2 game) {    }
 
@@ -95,6 +104,38 @@ public class Brick extends PolygonShape{
         }
 
         body.setUserData("Brick");
+
+        /******************* TEST DESSIN ********************/
+        System.out.println("Vertex count = " + this.getVertexCount());
+        Vector2 vertex = new Vector2();
+        this.getVertex(0, vertex);
+        System.out.println("Vertex 0 = " + vertex);
+
+        float coordPoly[] = new float [this.getVertexCount()*2];
+        for(int i = 0; i < this.getVertexCount(); i++){
+            this.getVertex(i, vertex);
+            System.out.println("Vertex = " + vertex);
+            coordPoly[2*i] = vertex.x;
+            coordPoly[2*i + 1] = vertex.y;
+
+            System.out.println("Coord = " + coordPoly[2*i] + " || " + coordPoly[2*i +1]);
+        }
+
+        // Creating the color filling (but textures would work the same way)
+        Pixmap pix = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pix.setColor(1f, 1f, 1f, 1);
+        pix.fill();
+        Texture textureSolid = new Texture(pix);
+        TextureRegion textureRegion = new TextureRegion(textureSolid);
+
+        EarClippingTriangulator triangulator = new EarClippingTriangulator();
+        ShortArray triangleIndices = triangulator.computeTriangles(coordPoly);
+
+        PolygonRegion polyReg = new PolygonRegion(textureRegion, coordPoly, triangleIndices.toArray());
+
+        polySprite = new PolygonSprite(polyReg);
+        polySprite.setOrigin(body.getLocalCenter().x, body.getLocalCenter().y);
+        polySprite.setColor(223/256f,73/256f,73/256f, 1f);
     }
 
     public float getWidth(){
@@ -205,6 +246,12 @@ public class Brick extends PolygonShape{
                 body.getAngle()*MathUtils.radiansToDegrees);
     }
      */
+    public void draw(PolygonSpriteBatch polyBatch){
+        polySprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+        polySprite.setX(body.getPosition().x);
+        polySprite.setY(body.getPosition().y);
+        polySprite.draw(polyBatch);
+    }
 
     public static void Destroy(final BrickBreaker2 game, Array<Brick> array){
         for(int i = 0; i < array.size; i++){

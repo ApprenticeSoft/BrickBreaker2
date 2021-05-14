@@ -33,6 +33,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 
 public class GameScreen extends InputAdapter implements Screen {
 
@@ -54,6 +55,7 @@ public class GameScreen extends InputAdapter implements Screen {
 
     //Box2D debug
     Box2DDebugRenderer debug;
+    PolygonSpriteBatch polyBatch;
 
     private Array<Ball> balls;
     private Array<Brick> bricks;
@@ -106,6 +108,8 @@ public class GameScreen extends InputAdapter implements Screen {
         bodyDroite.createFixture(boxBordure, 0.0f);
 
         debug = new Box2DDebugRenderer();
+        polyBatch = new PolygonSpriteBatch();
+        polyBatch.setProjectionMatrix(camera.combined);
 
 
         //Pad
@@ -121,17 +125,19 @@ public class GameScreen extends InputAdapter implements Screen {
         // Briques
         bricks = new Array<>();
 
-        LevelBuilder level1 = new LevelBuilder(game, world, camera, bricks);
-        level1.Build(1,5, 8, BrickEnum.rectangle);
+        //LevelBuilder level1 = new LevelBuilder(game, world, camera, bricks);
+        //level1.Build(1,5, 10, BrickEnum.rectangle);
         LevelBuilder level2 = new LevelBuilder(game, world, camera, bricks);
-        level2.Build(1,5, 8, BrickEnum.triangle);
+        level2.Build(1,6, 12, BrickEnum.triangle);
 
-
+        Brick brick1 = new Brick(game);
+        brick1.init(world, camera, 0, 0, 0, BrickEnum.rectangle);
+        bricks.add(brick1);
     }
 
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(0.2f, 0.3f, 0.7f, 1);
+        ScreenUtils.clear(0.27f,0.695f,0.613f, 1);
         debug.render(world, camera.combined);
 
         // Debug box2d
@@ -200,6 +206,12 @@ public class GameScreen extends InputAdapter implements Screen {
                 }
             }
         }
+
+        // Dessins
+        polyBatch.begin();
+        for(int i = 0; i < bricks.size; i++)
+            bricks.get(i).draw(polyBatch);
+        polyBatch.end();
     }
 
     @Override

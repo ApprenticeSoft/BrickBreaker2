@@ -124,6 +124,20 @@ public class LevelBuilder {
                 }
             }
         }
+
+        else if(niveau == 6){
+            for(int i = 0; i < (ligne); i++){
+                for(int j = 0; j < colonne; j++){
+                    Brick brick = (Brick)game.pools.obtain(Brick.class);
+                    brick.init(world, camera, 0, 0, 0, briqueEnum);
+                    brick.setPosition(  (j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth(),
+                            camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
+                    bricks.add(brick);
+                    brick.body.setUserData("Brick");
+                    brick.dispose();
+                }
+            }
+        }
     }
 
 }
