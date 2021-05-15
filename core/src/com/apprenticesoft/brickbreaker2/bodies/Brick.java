@@ -106,19 +106,13 @@ public class Brick extends PolygonShape{
         body.setUserData("Brick");
 
         /******************* TEST DESSIN ********************/
-        System.out.println("Vertex count = " + this.getVertexCount());
         Vector2 vertex = new Vector2();
-        this.getVertex(0, vertex);
-        System.out.println("Vertex 0 = " + vertex);
 
         float coordPoly[] = new float [this.getVertexCount()*2];
         for(int i = 0; i < this.getVertexCount(); i++){
             this.getVertex(i, vertex);
-            System.out.println("Vertex = " + vertex);
             coordPoly[2*i] = vertex.x;
             coordPoly[2*i + 1] = vertex.y;
-
-            System.out.println("Coord = " + coordPoly[2*i] + " || " + coordPoly[2*i +1]);
         }
 
         // Creating the color filling (but textures would work the same way)

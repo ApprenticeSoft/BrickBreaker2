@@ -3,13 +3,23 @@ package com.apprenticesoft.brickbreaker2.bodies;
 import com.apprenticesoft.brickbreaker2.BrickBreaker2;
 import com.apprenticesoft.brickbreaker2.utils.GameConstants;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonSprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ShortArray;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.*;
+
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+
 
 public class Ball extends CircleShape {
 
@@ -23,6 +33,8 @@ public class Ball extends CircleShape {
     public float maxSpeed;
     public int initY, rebond;
     public long balleLaserTime;
+
+    private ShapeRenderer shapeRenderer;
 
     public Ball(BrickBreaker2 game) {
         System.out.println("Balle venant du Pool!!!");
@@ -55,6 +67,13 @@ public class Ball extends CircleShape {
         body.setUserData("Ball");
 
         System.out.println("Balle initiée");
+
+        /******************* TEST DESSIN ********************/
+        shapeRenderer = new ShapeRenderer();
+        //shapeRenderer.setProjectionMatrix(camera.combined);
+
+        //shapeRenderer.scale(GameConstants.BOX_TO_WORLD,GameConstants.BOX_TO_WORLD,1);
+
     }
 
     public void Active(){
@@ -120,5 +139,14 @@ public class Ball extends CircleShape {
                 game.pools.free(ball);
             }
         }
+    }
+
+    public void draw(){
+        shapeRenderer.setColor(1,1,1,1);
+        shapeRenderer.begin(ShapeType.Filled);
+        shapeRenderer.circle(   body.getPosition().x * GameConstants.BOX_TO_WORLD,
+                                body.getPosition().y*GameConstants.BOX_TO_WORLD,
+                            getRadius()*GameConstants.BOX_TO_WORLD);
+        shapeRenderer.end();
     }
 }

@@ -209,9 +209,14 @@ public class GameScreen extends InputAdapter implements Screen {
 
         // Dessins
         polyBatch.begin();
+        bar.draw(polyBatch);
         for(int i = 0; i < bricks.size; i++)
             bricks.get(i).draw(polyBatch);
         polyBatch.end();
+
+        for (Ball ball: balls){
+            ball.draw();
+        }
     }
 
     @Override

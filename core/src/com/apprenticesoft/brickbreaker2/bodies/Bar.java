@@ -2,8 +2,14 @@ package com.apprenticesoft.brickbreaker2.bodies;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonSprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -12,6 +18,15 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.apprenticesoft.brickbreaker2.utils.GameConstants;
+import com.badlogic.gdx.utils.ShortArray;
+
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.graphics.g2d.PolygonSprite;
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.EarClippingTriangulator;
 
 public class Bar extends PolygonShape{
 
@@ -24,6 +39,9 @@ public class Bar extends PolygonShape{
     public float width, height;
     World world;
     Camera camera;
+
+    // Test dessin
+    private PolygonSprite polySprite;
 
     public Bar(World world, Camera camera){
         super();
@@ -56,6 +74,32 @@ public class Bar extends PolygonShape{
         body2.setUserData("Bar");
         body2.createFixture(fixtureDef);
         body2.setFixedRotation(true);
+
+        /******************* TEST DESSIN ********************/
+        Vector2 vertex = new Vector2();
+
+        float coordPoly[] = new float [this.getVertexCount()*2];
+        for(int i = 0; i < this.getVertexCount(); i++){
+            this.getVertex(i, vertex);
+            coordPoly[2*i] = vertex.x;
+            coordPoly[2*i + 1] = vertex.y;
+        }
+
+        // Creating the color filling (but textures would work the same way)
+        Pixmap pix = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pix.setColor(1f, 1f, 1f, 1);
+        pix.fill();
+        Texture textureSolid = new Texture(pix);
+        TextureRegion textureRegion = new TextureRegion(textureSolid);
+
+        EarClippingTriangulator triangulator = new EarClippingTriangulator();
+        ShortArray triangleIndices = triangulator.computeTriangles(coordPoly);
+
+        PolygonRegion polyReg = new PolygonRegion(textureRegion, coordPoly, triangleIndices.toArray());
+
+        polySprite = new PolygonSprite(polyReg);
+        polySprite.setOrigin(body.getLocalCenter().x, body.getLocalCenter().y);
+        //polySprite.setColor(223/256f,73/256f,73/256f, 1f);
     }
 
     public float getWidth(){
@@ -79,6 +123,15 @@ public class Bar extends PolygonShape{
                 GameConstants.BOX_TO_WORLD * (this.body.getPosition().y - this.getHeight()),
                 GameConstants.BOX_TO_WORLD * (2 * this.getWidth() + this.body2.getPosition().x - this.body.getPosition().x),
                 GameConstants.BOX_TO_WORLD * 2 * this.getHeight());
+    }
+
+    public void draw(PolygonSpriteBatch polyBatch){
+        polySprite.setX(body.getPosition().x);
+        polySprite.setY(body.getPosition().y);
+        polySprite.draw(polyBatch);
+        polySprite.setX(body2.getPosition().x);
+        polySprite.setY(body2.getPosition().y);
+        polySprite.draw(polyBatch);
     }
 
     public void deplacement(){
