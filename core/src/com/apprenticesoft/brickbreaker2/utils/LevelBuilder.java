@@ -130,8 +130,16 @@ public class LevelBuilder {
                 for(int j = 0; j < colonne; j++){
                     Brick brick = (Brick)game.pools.obtain(Brick.class);
                     brick.init(world, camera, 0, 0, 0, briqueEnum);
-                    brick.setPosition(  (j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth(),
-                            camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
+
+                    //float posX = (j + 1)*(camera.viewportWidth - colonne*2*brick.width)/(colonne +1) + brick.width + j*(2*brick.width);
+                    //if(colonne*2*brick.width > camera.viewportWidth)
+                    float marge = 3*brick.width;
+                     float   posX = brick.width + marge + j*(camera.viewportWidth - 2*brick.width - 2*marge)/(colonne-1);
+                    float posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                    brick.setPosition(posX, posY);
+                    if((i+j)%2 == 0)
+                        brick.body.setTransform(posX, posY + 2*brick.height/3, 180*MathUtils.degreesToRadians);
                     bricks.add(brick);
                     brick.body.setUserData("Brick");
                     brick.dispose();
