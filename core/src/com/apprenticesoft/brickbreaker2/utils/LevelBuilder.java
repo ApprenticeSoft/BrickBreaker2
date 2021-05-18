@@ -215,6 +215,24 @@ public class LevelBuilder {
                 }
             }
         }
+        else if(niveau == 11){
+            float angle = -6;    // Rotation progressive des briques
+            for(int i = 0; i < (ligne); i++){
+                for(int j = 0; j < colonne; j++){
+                    Brick brick = (Brick)game.pools.obtain(Brick.class);
+                    brick.init(world, camera, 0, 0, j*angle, briqueEnum);
+
+                    float posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                    float posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                    brick.setPosition(posX, posY);
+
+                    bricks.add(brick);
+                    brick.body.setUserData("Brick");
+                    brick.dispose();
+                }
+            }
+        }
     }
 
 }

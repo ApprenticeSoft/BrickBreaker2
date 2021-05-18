@@ -128,11 +128,7 @@ public class GameScreen extends InputAdapter implements Screen {
         //LevelBuilder level1 = new LevelBuilder(game, world, camera, bricks);
         //level1.Build(1,5, 10, BrickEnum.rectangle);
         LevelBuilder level2 = new LevelBuilder(game, world, camera, bricks);
-        level2.Build(10,6, 8, 0.02f*camera.viewportWidth, BrickEnum.triangle);
-
-        Brick brick1 = new Brick(game);
-        brick1.init(world, camera, 0, 0, 0, BrickEnum.rectangle);
-        bricks.add(brick1);
+        level2.Build(11,6, 11, 0.02f*camera.viewportWidth, BrickEnum.triangle);
     }
 
     @Override
