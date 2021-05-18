@@ -14,6 +14,7 @@ public class LevelBuilder {
     private Array<Brick> bricks;
     private World world;
     private Camera camera;
+    float posX, posY;
 
     public LevelBuilder(final BrickBreaker2 game, World world, Camera camera, Array<Brick> bricks){
         this.game = game;
@@ -23,214 +24,142 @@ public class LevelBuilder {
     }
 
     public void Build(int niveau, int ligne, int colonne, float margin, BrickEnum briqueEnum){
-        if(niveau == 1){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 0, briqueEnum);
-                    brick.setPosition(  (j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth(),
-                                        camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
+        for(int i = 0; i < (ligne); i++){
+            for(int j = 0; j < colonne; j++){
+                Brick brick = (Brick)game.pools.obtain(Brick.class);
+                brick.init(world, camera, 0, 0, 0, briqueEnum);
+                bricks.add(brick);
+                brick.body.setUserData("Brick");
+
+                switch (niveau){
+                    case 1:
+                        posX = (j + 1)*((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1)) + (1 + j*2)*brick.width;
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+                        break;
+                    case 2:
+                        if(i%2 == 1)
+                        {
+                            posX = (j + 1)*((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1)) + (1 + j*2)*brick.width;
+                            posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+                        }
+                        else
+                        {
+                            posX = (j + 1)*((camera.viewportWidth - (colonne - 1)*2*brick.width)/(colonne)) + (1 + j*2)*brick.width;
+                            posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+                        }
+                        break;
+                    case 3:
+                        if(i%2 == 1)
+                        {
+                            posX = (j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth();
+                            posY = camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1));
+                        }
+                        else
+                        {
+                            posX = (j + 1.5f)*((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1)) + (j + 1) * 2 * brick.width;
+                            posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+                        }
+                        break;
+                    case 4:
+                        if(j%2 == 1)
+                        {
+                            posX = (j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth();
+                            posY = camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1));
+                        }
+                        else
+                        {
+                            posX = (j + 1)*((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1)) + (1 + j*2)*brick.width;
+                            posY = camera.viewportHeight - 2*(i + 1) * brick.height - (i + 0.5f) *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+                        }
+                        break;
+                    case 5:
+                        posX = (j + 1)*((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1)) + (1 + j*2)*brick.width;
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+                        brick.body.setTransform(posX, posY, 45*MathUtils.degreesToRadians); //Rotation !
+                        break;
+                    case 6: // Briques triangles
+                        posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                        if((i+j)%2 == 0)
+                        {
+                            posY = posY + 2*brick.height/3;
+                            brick.body.setTransform(posX, posY, 180*MathUtils.degreesToRadians);
+                        }
+                        break;
+                    case 7:
+                        posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                        if((i+j)%2 == 0)
+                        {
+                            posY = posY + 2*brick.height/3;
+                            brick.body.setTransform(posX, posY, 180*MathUtils.degreesToRadians);
+                        }
+                        break;
+                    case 8:
+                        posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                        if((i+j)%2 == 0)
+                        {
+                            posY = posY + 2*brick.height/3;
+                            brick.body.setTransform(posX, posY, 180*MathUtils.degreesToRadians);
+                        }
+                        break;
+                    case 9:
+                        posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                        if(j%2 == 0)
+                            brick.body.setTransform(posX, posY, 270*MathUtils.degreesToRadians);
+                        else
+                            brick.body.setTransform(posX, posY, 90*MathUtils.degreesToRadians);
+                        break;
+                    case 10:
+                        posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                        if(j%2 == 0)
+                            brick.body.setTransform(posX, posY, 90*MathUtils.degreesToRadians);
+                        else
+                            brick.body.setTransform(posX, posY, -90*MathUtils.degreesToRadians);
+                        break;
+                    case 11:
+                        posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                        if(j%2 == 0)
+                            brick.body.setTransform(posX, posY, 270*MathUtils.degreesToRadians);
+                        else
+                            brick.body.setTransform(posX, posY, 90*MathUtils.degreesToRadians);
+
+                        break;
+                    case 12:
+                        float angle = -3;
+
+                        posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                        brick.body.setTransform(posX, posY, j*angle*MathUtils.degreesToRadians);
+
+                        break;
+                    default:
+                        posX = (j + 1)*((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1)) + (1 + j*2)*brick.width;
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+                        break;
                 }
+
+                brick.setPosition(posX, posY);
+                brick.dispose();
             }
         }
 
-        else if(niveau == 2){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 0, briqueEnum);
-                    if(i%2 == 1)
-                        brick.setPosition((j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth(),
-                                camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
-                    else
-                        brick.setPosition((j + 1)*((camera.viewportWidth - (colonne - 1)*2*brick.getWidth())/(colonne)) + (1 + j*2)*brick.getWidth(),
-                                camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
-
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-
-            for(int i = 0; i < bricks.size; i++){
-                if(bricks.get(i).body.getPosition().x + bricks.get(i).getWidth() > camera.viewportWidth){
-                    bricks.get(i).body.setActive(false);
-                    world.destroyBody(bricks.get(i).body);
-                    bricks.removeIndex(i);
-                }
-            }
-        }
-
-        else if(niveau == 3){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 0, briqueEnum);
-                    if(i%2 == 1)
-                        brick.setPosition((j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth(),
-                                camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
-                    else
-                        brick.setPosition((j + 1.5f)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (j + 1) * 2 * brick.getWidth(),
-                                camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
-
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-
-            for(int i = 0; i < bricks.size; i++){
-                if(bricks.get(i).body.getPosition().x + bricks.get(i).getWidth() > camera.viewportWidth){
-                    bricks.get(i).body.setActive(false);
-                    world.destroyBody(bricks.get(i).body);
-                    bricks.removeIndex(i);
-                }
-            }
-        }
-
-        else if(niveau == 4){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 0, briqueEnum);
-                    if(j%2 == 1)
-                        brick.setPosition((j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth(),
-                                camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
-                    else
-                        brick.setPosition((j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth(),
-                                camera.viewportHeight - 2*(i + 1) * brick.getHeight() - (i + 0.5f) *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
-
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-        }
-
-        else if(niveau == 5){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 0, briqueEnum);
-                    brick.setPosition((j + 1)*((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)) + (1 + j*2)*brick.getWidth(),
-                            camera.viewportHeight - (2*i + 1) * brick.getHeight() - i *((camera.viewportWidth - colonne*2*brick.getWidth())/(colonne + 1)));
-                    bricks.add(brick);
-                    brick.body.setTransform(brick.body.getPosition().x, brick.body.getPosition().y, 45*MathUtils.degreesToRadians); //Rotation !
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-        }
-        // Niveaux pour briques triangles
-        else if(niveau == 6){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 0, briqueEnum);
-
-                    float posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
-                    float posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
-
-                    brick.setPosition(posX, posY);
-                    if((i+j)%2 == 0)
-                        brick.body.setTransform(posX, posY + 2*brick.height/3, 180*MathUtils.degreesToRadians);
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-        }
-        else if(niveau == 7){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 0, briqueEnum);
-
-                    float posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
-                    float posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
-
-                    brick.setPosition(posX, posY);
-                    if(i%2 == 0)
-                        brick.body.setTransform(posX, posY + 2*brick.height/3, 180*MathUtils.degreesToRadians);
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-        }
-        else if(niveau == 8){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 0, briqueEnum);
-
-                    float posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
-                    float posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
-
-                    brick.setPosition(posX, posY);
-                    if(j%2 == 0)
-                        brick.body.setTransform(posX, posY + 2*brick.height/3, 180*MathUtils.degreesToRadians);
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-        }
-        else if(niveau == 9){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, 90, briqueEnum);
-
-                    float posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
-                    float posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
-
-                    brick.setPosition(posX, posY);
-                    if(j%2 == 0)
-                        brick.body.setTransform(posX, posY, 270*MathUtils.degreesToRadians);
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-        }
-        else if(niveau == 10){
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, -90, briqueEnum);
-
-                    float posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
-                    float posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
-
-                    brick.setPosition(posX, posY);
-                    if(j%2 == 0)
-                        brick.body.setTransform(posX, posY, 90*MathUtils.degreesToRadians);
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
-            }
-        }
-        else if(niveau == 11){
-            float angle = -6;    // Rotation progressive des briques
-            for(int i = 0; i < (ligne); i++){
-                for(int j = 0; j < colonne; j++){
-                    Brick brick = (Brick)game.pools.obtain(Brick.class);
-                    brick.init(world, camera, 0, 0, j*angle, briqueEnum);
-
-                    float posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
-                    float posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
-
-                    brick.setPosition(posX, posY);
-
-                    bricks.add(brick);
-                    brick.body.setUserData("Brick");
-                    brick.dispose();
-                }
+        for(int i = 0; i < bricks.size; i++){
+            if(bricks.get(i).body.getPosition().x + bricks.get(i).getWidth() > camera.viewportWidth){
+                bricks.get(i).body.setActive(false);
+                world.destroyBody(bricks.get(i).body);
+                bricks.removeIndex(i);
             }
         }
     }
