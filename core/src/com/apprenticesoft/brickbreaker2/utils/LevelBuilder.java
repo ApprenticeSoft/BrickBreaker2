@@ -136,6 +136,18 @@ public class LevelBuilder {
 
                         break;
                     case 12:
+                        posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
+                        posY = camera.viewportHeight - (2*i + 1) * brick.height - i *((camera.viewportWidth - colonne*2*brick.width)/(colonne + 1));
+
+                        if(i%2 == 0){
+                            posX -= brick.width/3;
+                            brick.body.setTransform(posX, posY, 270*MathUtils.degreesToRadians);
+                        }
+                        else
+                            brick.body.setTransform(posX, posY, 90*MathUtils.degreesToRadians);
+
+                        break;
+                    case 13:
                         float angle = -3;
 
                         posX = brick.width + margin + j*(camera.viewportWidth - 2*(brick.width + margin))/(colonne-1);
